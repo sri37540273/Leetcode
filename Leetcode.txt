@@ -1,0 +1,738 @@
+1. Two Sum (3)
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        """  
+        for i,v in enumerate(nums):
+            for j,u in enumerate(nums[i+1:]):
+                if v+u == target:
+                    return [i,j+i+1]
+        
+        for i,u in enumerate(nums): # we can replace enumerate with range
+            rem = target-u
+            if rem in nums and nums.index(rem) != i:
+                return [i,nums.index(rem)]
+        """
+        temp = {}
+        for i , u in enumerate(nums):
+            rem = target - u
+            if rem in temp:
+                return [i, temp[rem]]
+            temp[u]=i
+            
+9. Palindrome Number  (3)          
+class Solution:
+    def isPalindrome(self, x: int) -> bool:
+        if x < 0:  # Negative number is always be not palindrome
+            return False
+        div = 1
+        while(div*10 < x):
+            div*=10
+        while(x>0):
+            left = x//div
+            right = x%10
+            if left != right:
+                return False
+            x=(x%div)//10
+            div/=100
+        return True    
+    """    
+        return str(x) == str(x)[::-1]
+        
+        result = 0
+        temp = x
+        while(x > 0):
+            x,r = divmod(x,10)
+            result= result*10+r
+        return temp == result  
+      """  
+
+13. Roman to Integer (1)    
+class Solution:
+    def romanToInt(self, s: str) -> int:
+        ref = {"I":1,"V":5,"X":10,"L":50,"C":100,"D":500,"M":1000}
+        i = 0
+        result = 0
+        while(i <len(s)):
+            if i+1<len(s)  and ref.get(s[i]) < ref.get(s[i+1]):
+                result += ref.get(s[i+1]) - ref.get(s[i])
+                i+=2
+            else:
+                result += ref.get(s[i])
+                i+=1
+        return result                  
+        
+     
+14. Longest Common Prefix (2)      
+class Solution:
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        result = ""
+        for i in range(len(strs[0])):
+            print(i)
+            for s in strs:
+                if i == len(s) or s[i] != strs[0][i]:
+                    return result
+            result+= s[i]
+        return result        
+                
+                       
+        """ 
+        strsConvert = list(zip(*strs))
+        count = ""
+        for s in strsConvert:
+            if s.count(s[0]) != len(s):
+                break
+            count+=s[0]    
+        return count    
+        """ 
+
+20. Valid Parentheses (1)
+
+class Solution:
+    def isValid(self, s: str) -> bool:
+        mappings = {"}":"{","]":"[",")":"("}
+        temp = []
+        for p in s:
+            if p in mappings.values():
+                temp.append(p)
+            elif temp and p in mappings.keys() and temp[-1] == mappings.get(p):
+                temp.pop()
+            else:
+                return False
+        if not temp:
+            return True
+        return False
+
+21. Merge Two Sorted Lists (2)
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution:
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+        
+        if list1 is None:
+            return list2
+        if list2 is None:
+            return list1
+        """  Recursive approach
+        if list1.val < list2.val:
+            list1.next = self.mergeTwoLists(list1.next,list2)
+            return list1
+        else:
+            list2.next = self.mergeTwoLists(list2.next,list1)
+            return list2
+        """
+        dummy = ListNode() # Iterative approach
+        temp = dummy
+        while list1 and list2:
+            if list1.val < list2.val:
+                temp.next = list1
+                list1 = list1.next
+            else:
+                temp.next = list2
+                list2 = list2.next
+            temp = temp.next
+            
+        if list1:
+            temp.next=list1
+        elif list2:
+            temp.next=list2
+        return dummy.next    
+
+
+26. Remove Duplicates from Sorted Array (2)    
+                
+class Solution:
+    def removeDuplicates(self, nums: List[int]) -> int:
+        """
+        l = len(nums)-1
+        while(l > 0):
+            if nums[l] == nums[l-1]:
+                nums.pop(l)
+            l-=1    
+        return len(nums)        
+        """
+        for n in nums:
+            while (nums.count(n) > 1):
+                nums.remove(n)
+        return len(nums)        
+            
+        
+            
+ 27. Remove Element (2)       
+class Solution:
+    def removeElement(self, nums: List[int], val: int) -> int:
+        """
+        while ( val in nums):
+            nums.remove(val)
+        return len(nums)    
+        """
+        k = 0
+        for n in nums:
+            if n != val:
+                nums[k]=n
+                k+=1
+                
+        for i in range(k,len(nums)):
+            nums[i]=0
+        print(nums)
+        return k        
+        
+
+28. Implement strStr (4)
+class Solution:
+    def strStr(self, haystack: str, needle: str) -> int:
+        # return haystack.find(needle,-1)
+        """
+        try:  # if needle in haystack
+            return haystack.index(needle)
+        except:  # else:
+            return -1
+        """
+        for i in range(len(haystack)-len(needle)+1):
+            if haystack[i:i+len(needle)] == needle:
+                return i
+        return -1    
+  
+33. Search in Rotated Sorted Array (1)
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        # Binary Search
+        l,r = 0, len(nums)-1
+        while(l<=r):
+            mid = (l+r)//2
+            if nums[mid]==target:
+                return mid
+            
+            #left portion
+            if nums[l] <= nums[mid]:   # when comparing with l or r use =
+                if target >= nums[l] and target < nums[mid]:
+                    r = mid-1
+                else:
+                    l = mid+1
+            
+            # right portion
+            else: 
+                if target <= nums[r] and target > nums[mid]:
+                    l = mid+1
+                else:
+                    r = mid-1
+        return -1
+        
+class Solution:  # Search in Rotated Sorted Array II
+    def search(self, nums: List[int], target: int) -> int:
+        # Binary Search
+        l,r = 0, len(nums)-1
+        while(l<=r):
+            print(l,r)
+            mid = (l+r)//2
+            print(mid)
+            if nums[mid]==target:
+                return True
+            
+            #left portion
+            if nums[l]== nums[mid] and nums[r]== nums[mid]:  # This is addition condition to above problem
+                l+=1
+                r-=1
+            elif nums[l] <= nums[mid]:
+                if target >= nums[l] and target < nums[mid]:
+                    r = mid-1
+                else:
+                    l = mid+1
+            
+            # right portion
+            else: 
+                if target <= nums[r] and target > nums[mid]:
+                    l = mid+1
+                else:
+                    r = mid-1
+        return False        
+ 
+ 35. Search Insert Position (2)
+ 
+ class Solution:
+    def searchInsert(self, nums: List[int], target: int) -> int:
+        l , r = 0 , len(nums)-1
+          
+        
+        while (l<=r):
+            mid = (l+r)//2
+            if nums[mid] == target:
+                return mid
+            elif target > nums[mid]:
+                l = mid+1
+            elif target < nums[mid]:
+                r = mid-1
+        return l   # This case handles case taget not in list, but with in range.
+    
+        """
+        if target > nums[-1]:
+            return nums(list)
+        
+        for i,v in enumerate(nums):
+            if v == target:
+                return i
+            elif target > v and target < nums[i+1]:
+                return i+1
+        return 0    
+    """
+        
+53. Maximum Subarray (1)
+
+class Solution:
+    def maxSubArray(self, nums: List[int]) -> int:
+        
+        maxValue = nums[0]    # if all numbers in nums are less then zero, so dont assign the value to zero.
+        currMax = 0
+        for n in nums: 
+            if currMax < 0:  # Before adding next value check the current max
+                currMax = 0
+            currMax+=n
+            maxValue = max(maxValue,currMax)
+        return maxValue        
+
+58. Length of Last Word (1)
+class Solution:
+    def lengthOfLastWord(self, s: str) -> int:
+        l = len(s)-1
+        counter = 0  # start from end
+        while (s[l]== " "):  # get pointer to last not null char
+            l-=1
+        while (l >= 0 and s[l] != " "): # increase counter untill you reach null char from back. l>=0 to handle single word cases
+            counter+=1
+            l-=1
+        return counter     
+        
+        """
+        counter,result = 0,0   # start from begining
+        for c in s:
+            if c != " ":
+                counter+=1
+                result=counter
+            else:
+                counter = 0
+        return result
+        """        
+
+66. Plus One (1)
+class Solution:
+    def plusOne(self, digits: List[int]) -> List[int]:
+        l = len(digits)-1
+        while (l >= 0):
+            if digits[l] != 9:
+                digits[l] = digits[l]+1
+                return digits
+            else:
+                digits[l] = 0
+                l-=1
+        digits.insert(0,'1') # Case where all digits are 9's
+        return digits        
+
+67. Add Binary (1)
+class Solution:
+    def addBinary(self, a: str, b: str) -> str:
+        
+        a,b = a[::-1], b[::-1]
+        result,carry = "",0
+        
+        for i in range(max(len(a),len(b))): # loop max times
+            aValue = ord(a[i])-ord("0") if i < len(a) else 0 # if i greater the len value will be zerp
+            bValue = ord(b[i])-ord("0") if i < len(b) else 0
+            total = aValue+bValue+carry
+            temp = total%2
+            carry = total//2
+            result = str(temp)+result # append at front as we reversed initially
+        if carry:
+            result =  "1"+result
+        return result
+ 
+69. Sqrt(x) (1)
+class Solution:
+    def mySqrt(self, x: int) -> int:
+        if x<=1:
+            return x
+        result = 0.5*x # Assume out value is 1/2 of the input
+        change = 1
+        while ( change > 0.01):
+            result_next = 0.5*(result+x/result)  # This is babonian alogorithem 
+            change = abs(result_next-result)
+            result = result_next
+        return int(result) 
+        
+        
+70. Climbing Stairs (2)
+class Solution:
+    def climbStairs(self, n: int) -> int:
+        
+        # This is using decision tree and deriving fibonoci serice
+        one, two = 1,1
+        for i in range(n-1):
+            temp = one
+            one = one+two
+            two = temp
+        return one    
+        
+        """ Fibonoci serice using recursive approach """
+        if n <=2:
+            return n     
+        return self.climbStairs(n-1)+self.climbStairs(n-2)
+
+
+        
+
+74. Search a 2D Matrix (1) # Binary search log m+log n
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        top, bottom = 0 , len(matrix)-1
+        
+        while (top <= bottom):   # Identify the row
+            middleRow = (top+bottom)//2
+            if target < matrix[middleRow][0]: # we are not doing == as we are checking target with row
+                bottom = middleRow -1
+            elif target > matrix[middleRow][-1]:
+                top = middleRow+1
+            else:
+                break
+        if top > bottom: # If the row is not in matrix
+            return False
+        row = (top+bottom)//2
+        l,r = 0,len(matrix[0])-1
+        while l <= r:  # Identify the value in row
+            print("cal of row")
+            mid = (l+r)//2 
+            if matrix[row][mid] == target:
+                return True
+            elif target < matrix[row][mid]:
+                r = mid -1
+            elif target > matrix[row][mid]:
+                l = mid+1
+        return False         # return value if not in row
+         
+    
+83. Remove Duplicates from Sorted List (2)
+class Solution:
+    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        
+        while not head:
+            return None
+        curr = head   # We need pointer to loop through list
+        while (curr and curr.next): 
+            if curr.val == curr.next.val:  # we can replace if condition with while loop
+                curr.next = curr.next.next
+            else:
+                curr = curr.next
+        return head
+
+88. Merge Sorted Array (1)
+class Solution:
+    def merge(self, nums1: List[int], m: int, nums2: List[int], n: int) -> None:
+        l = len(nums1)-1
+        while (n > 0 and m > 0):
+            if nums1[m-1] > nums2[n-1]:
+                nums1[l]= nums1[m-1]
+                m-=1
+            else:
+                nums1[l]= nums2[n-1]
+                n-=1
+            l-=1
+        while n > 0:  # Insert remaining elements from list2. Nothing needed on list1 as they are already in place
+            nums1[l] = nums2[n-1]
+            n-=1
+            l-=1
+  "return num1.join(nums2).sort()"                      
+  
+https://www.youtube.com/watch?v=vMHaqhiTn7Y preorder
+https://www.youtube.com/watch?v=QxFOR8sQuB4&t=238s inorder
+https://leetcode.com/problems/binary-tree-postorder-traversal/discuss/1912651/python-easy-to-remember-different-order-traversal-by-one-template  
+94,144,145. Binary Tree Inorder Traversal (1) # Think about writing itteratively  --> 
+class Solution:
+        def inorderTraversal(self, root: TreeNode) -> List[int]:  # Iterative
+        stack = []
+        res = []
+        while root or stack:
+            while root:
+                stack.append(root)
+                root=root.left
+            root = stack.pop()
+            res.append(root.val)   # this is the only change between pre and inorder
+            root=root.right
+        return res
+       # if root is None:
+       #     return []
+       # return self.inorderTraversal(root.left)+[root.val]+self.inorderTraversal(root.right)
+       
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        stack = []
+        res = []
+        while stack or root:
+            while root:
+                res.append(root.val)  # this is the only change between pre and inorder
+                stack.append(root)
+                root=root.left
+            root=stack.pop()
+            root=root.right
+        return res
+        
+        #return [root.val]+self.inorderTraversal(root.left)+self.inorderTraversal(root.right)
+    
+    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        stack = []
+        res = []
+        while stack or root:
+            while root:
+                stack.append((root,2))
+                stack.append((root,1))
+                root=root.left
+            root,visit=stack.pop()
+            if visit ==2:
+                res.append(root.val)
+                root = None
+            else:
+                root=root.right
+        return res
+   #return self.inorderTraversal(root.left)+self.inorderTraversal(root.right)+[root.val]         
+       
+100. Same Tree (1)   # add node to tree
+class Solution:
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool: # Recursive
+        if not p and not q:  # Edge case wheren both are null
+            return True
+        elif not p or not q: # where one of them is null
+            return Fasle
+        if p.val != q.val:
+            return False
+        return self.isSameTree(p.left,q.left) and self.isSameTree(p.right,q.right)
+        
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool: # Iterative
+        
+        stack = []
+        stack.append((p,q))
+        while stack:
+            a,b = stack.pop()
+            if not a and not b:
+                continue
+            elif not a or not b:
+                return False
+            elif a.val != b.val:
+                return False
+            stack.append((a.left,b.left))
+            stack.append((a.right,b.right))
+        return True
+
+101. Symmetric Tree (2) # same solution as above, but interchange the left and right
+class Solution:
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        if not root:
+            return True
+        q = deque()
+        q.append((root.left,root.right))  # Iteratively
+        while q:
+            l,r = q.popleft()
+            if not l and not r:
+                continue
+            elif not l or not r:
+                return 0
+            elif l.val != r.val:
+                return 0
+            q.append((l.left,r.right))
+            q.append((l.right,r.left))
+        return 1
+            
+        """  Recursively
+        def isMatch(p,q):
+            if not p and not q:
+                return True
+            elif not p or not q:
+                return False
+            elif p.val != q.val:
+                return False
+            return isMatch(p.left,q.right) and isMatch(p.right,q.left)
+        return isMatch(root.left,root.right)
+                """  
+
+
+104,111. Maximum Depth of Binary Tree (2)
+class Solution:
+    def maxDepth(self, root: Optional[TreeNode]) -> int: # Recursive
+        if not root: # Edge case
+            return 0
+        # return 1+max(self.maxDepth(root.left),self.maxDepth(root.right))
+    def maxDepth(self, root: Optional[TreeNode]) -> int:  # Iterative
+        if not root: # Edge case
+            return 0
+        # return 1+max(self.maxDepth(root.left),self.maxDepth(root.right))
+        stack = [(root,1)]
+        res = 0
+        while stack:    # Iterative approach
+            node, depth = stack.pop()
+            res = max(res,depth)
+            if node.left:
+                stack.append([node.left,depth+1])
+            if node.right:
+                stack.append([node.right,depth+1])
+        return res
+                
+108. Convert Sorted Array to Binary Search Tree (1)
+class Solution:
+    def sortedArrayToBST(self, nums: List[int]) -> Optional[TreeNode]:
+        if not nums:
+            return None
+        
+        mid = len(nums)//2
+        root =TreeNode(nums[mid])
+        root.left = self.sortedArrayToBST(nums[:mid])
+        root.right = self.sortedArrayToBST(nums[mid+1:])
+        return root
+        
+110. Balanced Binary Tree (1)
+class Solution:
+    def isBalanced(self, root: Optional[TreeNode]) -> bool:
+        def isLength(root):
+            if not root:
+                return 0
+            return 1+max(isLength(root.left),isLength(root.right))
+    
+        if not root:
+            return True
+        return abs(isLength(root.left)- isLength(root.right)) <=1 and self.isBalanced(root.left) and self.isBalanced(root.right)
+
+111. Minimum Depth of Binary Tree (2)
+class Solution:
+    def minDepth(self, root: Optional[TreeNode]) -> int: # recursive
+        if not root:
+            return 0
+        if not root.left and not root.right: # If either left or right is null
+            return 1+max(self.minDepth(root.left),self.minDepth(root.right))
+        else:   # both left and right are not null
+            return 1+min(self.minDepth(root.left),self.minDepth(root.right))
+            
+    def minDepth(self, root: Optional[TreeNode]) -> int:
+        if not root:
+            return 0
+        stack = [(root,1)]
+        while stack:
+            node,depth = stack.pop(0)
+            if not node.left and not node.right:
+                return depth
+            if node.left:
+                stack.append((node.left,depth+1))
+            if node.right:
+                stack.append((node.right,depth+1))
+                
+112. Path Sum (1)
+class Solution:
+    def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
+        if not root:
+            return False
+        if root.val == targetSum and not root.left and not root.right: # Found target at the root
+            return True
+        else:  
+            return self.hasPathSum(root.left,targetSum-root.val) or self.hasPathSum(root.right,targetSum-root.val)
+
+121. Best Time to Buy and Sell Stock (1)
+class Solution:
+    def maxProfit(self, prices: List[int]) -> int:
+        profit = 0
+        minval = prices[0]
+        for p in prices:
+            print(p,minval)
+            if p < minval:
+                minval = p
+            else:
+                temp = p - minval # temp profile
+                print("profit ",temp)
+                profit = max(profit,temp)
+        return profit
+ 
+125. Valid Palindrome
+class Solution:
+    def isPalindrome(self, s: str) -> bool:
+        l,r=0,len(s)-1
+        while(l<r):
+            
+            while l<r and not s[l].isalnum():
+                print("increment l")
+                l+=1
+            while l<r and not s[r].isalnum():
+                print("increment r")
+                r-=1    
+            if s[l].lower()!=s[r].lower():
+                return False
+            print(s[l],s[r])
+            l+=1
+            r-=1
+        return True    
+        
+136. Single Number
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        temp = []
+        for n in nums:
+            if n in temp:
+                temp.remove(n)
+            else:
+                temp.append(n)
+        return temp[0]
+    def singleNumber(self, nums: List[int]) -> int:
+        return 2*sum(set(nums))-sum(nums)
+    def singleNumber(self, nums: List[int]) -> int:
+        result = 0
+        for n in nums:
+            result=result^n  # XOR operation
+        return result        
+        
+141. Linked List Cycle
+class Solution:
+    def hasCycle(self, head: ListNode) -> bool:
+        if head is None:
+            return False
+        slow,fast = head,head
+        while(slow and fast and fast.next):
+            slow = slow.next
+            fast = fast.next.next
+            if slow==fast:
+                return True
+        return False     
+
+160. Intersection of Two Linked Lists
+class Solution:
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        curr1,curr2 = headA,headB
+        while curr1 != curr2:
+            curr1= curr1.next if curr1 else headB
+            curr2= curr2.next if curr2 else headA
+        return curr1
+
+
+169. Majority Element
+class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        nums.sort()
+        return nums[len(nums)//2]  # Majority element occur more then 1/2 times
+    def majorityElement(self, nums: List[int]) -> int:
+        result,counter = 0,0
+        for n in nums:
+            if counter ==0:
+                result = n
+            counter += (1 if n==result else -1)  #https://www.youtube.com/watch?v=7pnhv842keE (boyer algorithm)
+        return result        
+        
+287. Find the Duplicate Number 
+
+class Solution:  # Need to think this as cycle linkedlist and solve using floyd cycle detection
+    def findDuplicate(self, nums: List[int]) -> int:
+        slow , fast = 0 , 0
+        while True:
+            slow = nums[slow]
+            fast = nums[nums[fast]]
+            if slow == fast:
+                break
+        slow2 =0
+        while True:
+            slow = nums[slow]
+            slow2 = nums[slow2]
+            if slow == slow2:
+                return slow
+        
