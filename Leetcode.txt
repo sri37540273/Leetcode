@@ -32,7 +32,7 @@ class Solution:
             right = x%10
             if left != right:
                 return False
-            x=(x%div)//10
+            x=(x%div)//10   # This sequence %div and then //10 is important. Doing %div later wont work as one digit is already reduced
             div/=100
         return True    
     """    
@@ -53,7 +53,7 @@ class Solution:
         i = 0
         result = 0
         while(i <len(s)):
-            if i+1<len(s)  and ref.get(s[i]) < ref.get(s[i+1]):
+            if i+1<len(s)  and ref.get(s[i]) < ref.get(s[i+1]):   # making error of not using s[i] , instead used i to get value from dict
                 result += ref.get(s[i+1]) - ref.get(s[i])
                 i+=2
             else:
@@ -65,16 +65,23 @@ class Solution:
 14. Longest Common Prefix (2)      
 class Solution:
     def longestCommonPrefix(self, strs: List[str]) -> str:
-        result = ""
-        for i in range(len(strs[0])):
+        result = ""                    # compare all char in first string with char in remaining strings
+        for i in range(len(strs[0])):  # get char in first string
             print(i)
-            for s in strs:
-                if i == len(s) or s[i] != strs[0][i]:
+            for s in strs:             # get all strings in the list
+                if i+1 > len(s) or s[i] != strs[0][i]:  # break when char in first string is greater then char in remaining string. As it will be max length string
                     return result
-            result+= s[i]
+        result+=strs[0][i]
         return result        
-                
-                       
+        """        
+        result = ''
+        for i in range(len(strs[0])):  
+            for j in range(len(strs)):
+                if i+1 > len(strs[j])  or strs[0][i] != strs[j][i]:
+                       return result
+            result+=strs[0][i]
+        return result 
+        """
         """ 
         strsConvert = list(zip(*strs))
         count = ""
@@ -101,6 +108,20 @@ class Solution:
         if not temp:
             return True
         return False
+        """
+        mapping = {"}":"{","]":"[",")":"("} 
+        temp = []
+        for m in s:   # Loop each char in string
+            if m in mapping.values():    # check if its open char
+                temp.append(m)
+            elif temp and m in mapping.keys() and mapping.get(m) == temp.pop(): # check if its close char and its not first or extra close char and its matches previous open char
+                pass
+            else:  
+                return False
+        if temp:   # Make sure there is no extra open char at the end
+            return False
+        return True
+        """
 
 21. Merge Two Sorted Lists (2)
 
@@ -110,36 +131,35 @@ class Solution:
 #         self.val = val
 #         self.next = next
 class Solution:
-    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
-        
-        if list1 is None:
+  """
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]: 
+        if not list1:   # If list1 is empty return list2  ->  Recursive
             return list2
-        if list2 is None:
-            return list1
-        """  Recursive approach
-        if list1.val < list2.val:
+        if not list2:   # If list2 is empty return list1
+            return list1 
+        if list1.val < list2.val:  # compare values in list1 and list2 to identify min value
             list1.next = self.mergeTwoLists(list1.next,list2)
             return list1
         else:
             list2.next = self.mergeTwoLists(list2.next,list1)
             return list2
-        """
-        dummy = ListNode() # Iterative approach
-        temp = dummy
-        while list1 and list2:
-            if list1.val < list2.val:
-                temp.next = list1
-                list1 = list1.next
+ """           
+def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]: 
+        dummy = ListNode()   # create dummy linked list
+        temp = dummy         # assign it to temp as linked list pointer change, but we need to return head of linked list
+        while list1 and list2:  # Itterative       AND as next or val function wont work on empty linked list
+            if list1.val < list2.val:   # compare values
+                temp.next =  list1      # as linked list is by reference , assign reference, not values. So use ListNode(list1.val) or list1 
+                list1 = list1.next      # Move pointer 
             else:
-                temp.next = list2
+                temp.next = ListNode(list2.val)   # Different from above to show both options
                 list2 = list2.next
-            temp = temp.next
-            
-        if list1:
+            temp = temp.next            # move result pointer
+        if list1:                       # Handle case when one linked list is longer then other
             temp.next=list1
-        elif list2:
+        if list2:
             temp.next=list2
-        return dummy.next    
+        return dummy.next               # return dummy as temp pointer is at the end of linked list
 
 
 26. Remove Duplicates from Sorted Array (2)    
@@ -147,30 +167,39 @@ class Solution:
 class Solution:
     def removeDuplicates(self, nums: List[int]) -> int:
         """
-        l = len(nums)-1
-        while(l > 0):
-            if nums[l] == nums[l-1]:
+        l = len(nums)-1                       # remove elements form end
+        while(l > 0):                         # for i in range(len(nums): nums[-i] wont work as -7 will be out of index as nums length is reduceded
+            if nums[l] == nums[l-1]:          # should go from n-->0 , not -1 -> to -n as we get index out of range error as nums will be smaller each loop
                 nums.pop(l)
             l-=1    
         return len(nums)        
         """
-        for n in nums:
+        for n in nums:                        # remove elements using count function
             while (nums.count(n) > 1):
                 nums.remove(n)
         return len(nums)        
-            
-        
+  """          
+     def removeDuplicates(self, nums: List[int]) -> int:    # replace duplcate element with laste element. Order of elements wont match
+        n = len(nums)   
+        i =0
+        while i < n:
+            if i+1 < n and nums[i]==nums[i+1]:
+                nums[i]= nums[n-1]
+                n-=1
+            else:
+                i+=1
+        return n   #  n will be final length of the array """       
             
  27. Remove Element (2)       
 class Solution:
     def removeElement(self, nums: List[int], val: int) -> int:
         """
-        while ( val in nums):
+        while ( val in nums):         # count or in function
             nums.remove(val)
         return len(nums)    
         """
         k = 0
-        for n in nums:
+        for n in nums:               # bring all non duplicate elements to begining
             if n != val:
                 nums[k]=n
                 k+=1
@@ -179,7 +208,16 @@ class Solution:
             nums[i]=0
         print(nums)
         return k        
-        
+    def removeElement(self, nums: List[int], val: int) -> int:  # update duplicate element with last element 
+        n = len(nums)
+        i = 0
+        while i < n:
+            if nums[i]==val:
+                nums[i]=nums[n-1]
+                n-=1
+            else:
+                i+=1
+        return n     
 
 28. Implement strStr (4)
 class Solution:
@@ -191,8 +229,8 @@ class Solution:
         except:  # else:
             return -1
         """
-        for i in range(len(haystack)-len(needle)+1):
-            if haystack[i:i+len(needle)] == needle:
+        for i in range(len(haystack)-len(needle)+1):  # need to add 1 as when we substeact we get short of 1 itteration
+            if haystack[i:i+len(needle)] == needle:   # ad length of need from i when cheking 
                 return i
         return -1    
   
@@ -493,63 +531,23 @@ class Solution:
                 root=root.right
         return res
    #return self.inorderTraversal(root.left)+self.inorderTraversal(root.right)+[root.val]         
-       
-100. Same Tree (1)   # add node to tree
+ 
+98. Validate Binary Search Tree
+https://www.youtube.com/watch?v=s6ATEkipzow
 class Solution:
-    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool: # Recursive
-        if not p and not q:  # Edge case wheren both are null
-            return True
-        elif not p or not q: # where one of them is null
-            return Fasle
-        if p.val != q.val:
-            return False
-        return self.isSameTree(p.left,q.left) and self.isSameTree(p.right,q.right)
-        
-    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool: # Iterative
-        
-        stack = []
-        stack.append((p,q))
-        while stack:
-            a,b = stack.pop()
-            if not a and not b:
-                continue
-            elif not a or not b:
-                return False
-            elif a.val != b.val:
-                return False
-            stack.append((a.left,b.left))
-            stack.append((a.right,b.right))
-        return True
-
-101. Symmetric Tree (2) # same solution as above, but interchange the left and right
-class Solution:
-    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
-        if not root:
-            return True
-        q = deque()
-        q.append((root.left,root.right))  # Iteratively
-        while q:
-            l,r = q.popleft()
-            if not l and not r:
-                continue
-            elif not l or not r:
-                return 0
-            elif l.val != r.val:
-                return 0
-            q.append((l.left,r.right))
-            q.append((l.right,r.left))
-        return 1
-            
-        """  Recursively
-        def isMatch(p,q):
-            if not p and not q:
+    def isValidBST(self, root: Optional[TreeNode]) -> bool:
+        left,right = float("-inf") , float("inf")  # these play major role
+        def helper(left,root,right):
+            if not root:
                 return True
-            elif not p or not q:
+            if not (left <root.val<right):
                 return False
-            elif p.val != q.val:
-                return False
-            return isMatch(p.left,q.right) and isMatch(p.right,q.left)
-        return isMatch(root.left,root.right)
+            return helper(left,root.left,root.val) and helper(root.val,root.right,right)
+        return helper(left,root,right)
+
+
+ 
+
                 """  
 
 
